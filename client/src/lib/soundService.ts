@@ -1,10 +1,79 @@
 // Sound service for playing button sounds
 
-// Create base64-encoded click sound (short beep)
-const clickSoundBase64 = 'data:audio/wav;base64,UklGRpQFAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YXAFAACBgIF/gnyCfYJ8gnuCeoJ5gneCdoJ0gnOCcoJwgm+CboJtgmyCa4JpgmiCZ4JmgmWCZIJjgmKCYYJggmCCX4Jegl2CXIJbgluCWoJZglmCWIJXgleCVoJWglWCVYJUglSCU4JTglKCUoJRglGCUIJQgk+CT4JOgk6CToJNgk2CTIJMgkuCS4JLgkqCSoJKgkmCSYJJgkiCSIJIgkeCR4JHgkaCRoJGgkWCRYJFgkSCRIJEgkOCQ4JDgkKCQoJCgkGCQYJBgkCCQIJAgj+CP4I/gj6CPoI+gj2CPYI9gjyCPII8gjuCO4I7gjqCOoI6gjmCOYI5gjiCOII4gjeCN4I3gjaCNoI2gjWCNYI1gjSCNII0gjOCM4IzgjKCMoIygjGCMYIxgjCCMIIwgi+CL4Ivgi6CLoIugi2CLYItgiyCLIIsgiuCK4IrgiuCKoIqgiqCKYIpgimCKIIogiiCJ4IngieCJoImgiaCJYIlgiWCJIIkgiSCI4IjgiOCIoIigiKCIYIhgiGCIIIggiCCH4Ifgh+CHoIegh6CHYIdgh2CHIIcghyCG4IbghuCGoIaghqCGYIZghmCGIIYghiCF4IXgheCFoIWghaCFYIVghWCFIIUghSCE4ITghOCEoISghKCEYIRghGCEIIQghCCD4IPgg+CDoIOgg6CDYINgg2CDIIMggyCC4ILgguCCoIKggqCCYIJggmCCIIIggiCB4IHggeCBoIGggaCBYIFggWCBIIEggSCA4IDggOCAoICggKCAYIBggGCAIIAggCCAIIAggCCAYIBggGCAoICggKCA4IDggOCBIIEggSCBYIFggWCBoIGggaCB4IHggeCCIIIggiCCYIJggmCCoIKggqCC4ILgguCDIIMggyDDYMNgw2DDoMOgw6DD4MPgw+DEIMQghCCEYIRghGCEoISghKCE4ITghOCFIIUghSCFYIVghWCFoIWghaCF4IXgheCGIIYghiCGYIZghmCGoIaghqCG4IbghuCHIIcghyCHYIdgh2CHoIegh6CH4Ifgh+CIIIggiCCIYIhgiGCIoIigiKCI4IjgiOCJIIkgiSCJYIlgiWCJoImgiaCJ4IngieCKIIogiiCKYIpgimCKoIqgiqCK4IrgiuCLIIsgiyCLYItgi2CLoIugi6CL4Ivgi+CMIIwgjCCMYIxgjGCMoIygjKCM4IzgjOCNII0gjSCNYI1gjWCNoI2gjaCN4I3gjeCOII4gjiCOYI5gjmCOoI6gjqCO4I7gjuCPII8gjyCPYI9gj2CPoI+gj6CP4I/gj+CQIJAgkCCQYJBgkGCQoJCgkKCQ4JDgkOCRIJEgkSCRYJFgkWCRoJGgkaCR4JHgkeCR4JIgkiCSYJJgkmCSoJKgkqCS4JLgkuCTIJMgkyCTYJNgk2CToJOgk6CT4JPgk+CUIJQglCCUIJRglGCUYJSglKCUoJTglOCU4JUglSCVIJVglWCVYJWglaCVoJXgleCWIJYglmCWYJZglqCWoJbgluCXIJcgl2CXYJegl6CX4Jfgl+CYIJggmGCYYJigmKCY4JjgmSCZIJlgmWCZoJmgmeCZ4JogmiCaYJpgmqCaoJrgmuCbIJsgm2CbYJugm6Cb4Jvgm+CcIJwgnCCcYJxgnGCcoJygnKCc4JzgnOCdIJ0gnSCdYJ1gnWCdoJ2gnaCd4J3gneCeIJ4gniCeYJ5gnmCeoJ6gnqCe4J7gnuCfIJ8gnyC';
+/**
+ * Creates a mechanical keyboard click sound using Web Audio API
+ * This gives us a more realistic keyboard click than a prerecorded sound
+ */
+function createKeyboardClickSound(audioContext: AudioContext): AudioBuffer {
+  // Create a short audio buffer (100ms)
+  const sampleRate = audioContext.sampleRate;
+  const duration = 0.08; // 80ms
+  const bufferSize = Math.floor(sampleRate * duration);
+  const buffer = audioContext.createBuffer(1, bufferSize, sampleRate);
+  const data = buffer.getChannelData(0);
+  
+  // Generate a mechanical keyboard click sound
+  // First part: quick attack
+  const attackTime = Math.floor(sampleRate * 0.005); // 5ms attack
+  for (let i = 0; i < attackTime; i++) {
+    // Sharp attack with some randomness for a crisp click
+    data[i] = 0.5 * Math.random() * (i / attackTime);
+  }
+  
+  // Middle part: strong but short body
+  const bodyLength = Math.floor(sampleRate * 0.01); // 10ms body
+  for (let i = 0; i < bodyLength; i++) {
+    const idx = attackTime + i;
+    // Add some mid-frequency components
+    data[idx] = 0.6 * Math.sin(i * 0.2) * Math.exp(-i / (bodyLength * 0.5));
+  }
+  
+  // Decay part: fast decay with slight resonance
+  for (let i = attackTime + bodyLength; i < bufferSize; i++) {
+    // Exponential decay with added overtones for a mechanical feel
+    const decayProgress = (i - (attackTime + bodyLength)) / (bufferSize - (attackTime + bodyLength));
+    const decay = Math.exp(-decayProgress * 12);
+    const resonance = Math.sin(decayProgress * 120) * 0.1;
+    data[i] = (decay + resonance) * 0.3;
+  }
+  
+  return buffer;
+}
 
-// Create base64-encoded click sound (short beep)
-const secondClickSoundBase64 = 'data:audio/wav;base64,UklGRpAEAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YWwEAAAAAQEDBAYHCQsMDhATFRcaHB8hJCYpLC4xNDc6PD9CREZITVBTWF1gY2ZrbXJ1eHuAg4aJjI+SlZibnqKlqKuusLO2ubzAw8XIy87S1dne4eTn6+7y9vr9/v38+/n29PPw7uzp5uPg3dnW09DOysbCvbm1sKyoo5+al5KOiYWAfHh0cGxnY19aVlJNSURAPDcyLiomIh4aFhIPCwcEAAD9+ff08/Hu6+jl4t/c2dbSz8zJxsO/vLm1sq+rqKShnpuXlJCNiYaDf3t4dHBsaGRgXFlVUU1JREBAOzc0MCwpJSIeGxcUEAwJBgMA/fv5+Pb08e/s6efi39zZ1tPQzcnGw7+8ubayr6uopKGem5eUkI2JhoN/e3h0cGxoZGBcWVVRTUlFQUA7NzQwLColIh4bFxQQDAkGAwD9+/n49vTx7+zp5eLf3NnW09DNycbDv7y5trKvq6ikoZ6bl5SQjYmGg397eHRwbGhkYFxZVVFNSUVBQDs3NDAsKSUiHhsXFBAMCQYDAP37+fj29PHv7Onl4t/c2dbT0M3JxsO/vLm2sq+rqKShnpuXlJCNiYaDf3t4dHBsaGRgXFlVUU1JRUFAO7YwLCklIh4bFxQQDAkGAwD9+/n49vTx7+3p5eLf3NnW09DNycbDv7y5trKvq6ikoZ6bl5SQjYmGg397eHRwbGhkYFxZVVFNSUVBQDs3NDAsKSUiHhsXFBAMCQYDAP37+fj29PHv7Onl4t/c2dbT0M3JxsO/vLm2sq+rqKShnpuXlJCNiYaDf3t4dHBsaGRgXFlVUU1JRUFAO7YwLCklIh4bFxQQDAkGAwD9+/n49vTx7+zp5eLf3NnW09DNycbDv7y5trKvq6ikoZ6bl5SQjYmGg397eHRwbGhkYFxZVVFNSUVBQDs3NDAsKSUiHhsXFBAMCQYDAP37+fj29PHv7Onl4t/c2dbT0M3JxsO/vLm2sq+rqKShnpuXlJCNiYaDfnl0cGxoZGBcWVVRTUlFQUA7NzQwLColIh4bFxQQDAkGAwD9+/n49vTx7+zp5eLf3NnW09DNycbDv7y5trKvq6ikoZ6bl5SQjYmGg397eHRwbGhkYFxZVVFNSUVBQDs3NDAsKSUiHhsXFBAMCQYDAP37+fj29PHv7Onl4t/c2dbT0M3JxsO/vLm2sq+rqKShnpuXlJCNiYaDf3t4dHBsaGRgXFlVUU1JRUFAO7YwLCklIh4bFxQQDAkGAwD9+/n49fPx7+zp5eLf3NnW09DNycbDv7y5trKvq6iko5+bl5SQjYmGg397eHRwbGhkYFxZVVFNSUVBQDs3NDAsKSUiHhsXFBAMCQYDAP37+fj19PHv7Onl4t/c2dbT0M3JxsO/vLm2sq+rqKOgnpqWko6Kh4N+eXVxbWlkYFtXU09LRUFA';
+/**
+ * Creates a mechanical keyboard release sound using Web Audio API
+ */
+function createKeyboardReleaseSound(audioContext: AudioContext): AudioBuffer {
+  // Create a short audio buffer (60ms)
+  const sampleRate = audioContext.sampleRate;
+  const duration = 0.06; // 60ms
+  const bufferSize = Math.floor(sampleRate * duration);
+  const buffer = audioContext.createBuffer(1, bufferSize, sampleRate);
+  const data = buffer.getChannelData(0);
+  
+  // Generate a keyboard key release sound
+  // Shorter attack and more subtle
+  const attackTime = Math.floor(sampleRate * 0.002); // 2ms attack
+  for (let i = 0; i < attackTime; i++) {
+    data[i] = 0.3 * Math.random() * (i / attackTime);
+  }
+  
+  // Very short body
+  const bodyLength = Math.floor(sampleRate * 0.008); // 8ms body
+  for (let i = 0; i < bodyLength; i++) {
+    const idx = attackTime + i;
+    data[idx] = 0.4 * Math.sin(i * 0.3) * Math.exp(-i / (bodyLength * 0.7));
+  }
+  
+  // Quick decay
+  for (let i = attackTime + bodyLength; i < bufferSize; i++) {
+    const decayProgress = (i - (attackTime + bodyLength)) / (bufferSize - (attackTime + bodyLength));
+    const decay = Math.exp(-decayProgress * 15);
+    data[i] = decay * 0.2;
+  }
+  
+  return buffer;
+}
 
 /**
  * AudioContext singleton for playing sounds
@@ -44,10 +113,20 @@ class SoundService {
     if (!this.enabled || !this.audioContext) return;
 
     try {
-      // Use the base64 encoded sound
-      const sound = new Audio(clickSoundBase64);
-      sound.volume = 0.3; // Set volume to 30%
-      sound.play().catch(e => console.log('Audio play failed:', e));
+      // Create the sound buffer if audioContext is initialized
+      const buffer = createKeyboardClickSound(this.audioContext);
+      
+      // Create source node, connect to destination and play
+      const source = this.audioContext.createBufferSource();
+      source.buffer = buffer;
+      
+      // Create gain node to control volume and connect to destination
+      const gainNode = this.audioContext.createGain();
+      gainNode.gain.value = 0.4; // Set volume to 40%
+      
+      source.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
+      source.start();
     } catch (error) {
       console.error('Error playing click sound:', error);
     }
@@ -60,10 +139,20 @@ class SoundService {
     if (!this.enabled || !this.audioContext) return;
 
     try {
-      // Use the base64 encoded sound
-      const sound = new Audio(secondClickSoundBase64);
-      sound.volume = 0.2; // Set volume to 20%
-      sound.play().catch(e => console.log('Audio play failed:', e));
+      // Create the sound buffer if audioContext is initialized
+      const buffer = createKeyboardReleaseSound(this.audioContext);
+      
+      // Create source node, connect to destination and play
+      const source = this.audioContext.createBufferSource();
+      source.buffer = buffer;
+      
+      // Create gain node to control volume and connect to destination
+      const gainNode = this.audioContext.createGain();
+      gainNode.gain.value = 0.3; // Set volume to 30%
+      
+      source.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
+      source.start();
     } catch (error) {
       console.error('Error playing release sound:', error);
     }
