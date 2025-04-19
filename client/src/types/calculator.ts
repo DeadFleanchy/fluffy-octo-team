@@ -1,4 +1,4 @@
-export type Theme = 'blue' | 'dark' | 'green';
+export type Theme = 'blue' | 'dark' | 'green' | 'purple';
 
 export type AngleMode = 'RAD' | 'DEG';
 

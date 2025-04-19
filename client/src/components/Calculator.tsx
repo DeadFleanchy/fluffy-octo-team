@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { HistoryPanel } from './HistoryPanel';
 import { CalculatorDisplay } from './CalculatorDisplay';
 import { CalculatorKeypad } from './CalculatorKeypad';
 import { ThemeSwitcher } from './ThemeSwitcher';
+import { InputPanel } from './InputPanel';
 import { useCalculator } from '@/hooks/useCalculator';
+import { formatTime } from '@/lib/utils';
 
 export function Calculator() {
   const {
@@ -19,6 +21,31 @@ export function Calculator() {
     memoryAdd,
     memorySubtract
   } = useCalculator();
+  
+  // Function to handle input from the Input Panel
+  const handleManualInput = useCallback((expression: string, result: string) => {
+    // Create new history item
+    const newHistoryItem = {
+      expression,
+      result,
+      timestamp: formatTime(new Date())
+    };
+    
+    const { setState } = useCalculator();
+    
+    // Update state with the new history item
+    setState((prev) => {
+      const newHistory = [newHistoryItem, ...prev.history];
+      // Limit history size
+      if (newHistory.length > 20) {
+        newHistory.pop();
+      }
+      return {
+        ...prev,
+        history: newHistory
+      };
+    });
+  }, []);
 
   // Add keyboard support
   useEffect(() => {
@@ -75,7 +102,7 @@ export function Calculator() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 calculator-bg">
-      <style jsx global>{`
+      <style>{`
         .calculator-theme-blue {
           --primary: #2196F3;
           --secondary: #64B5F6;
@@ -128,6 +155,24 @@ export function Calculator() {
           --btn-equals: #4CAF50;
           --history-bg: #F1F8E9;
           --memory-indicator: #4CAF50;
+        }
+        
+        .calculator-theme-purple {
+          --primary: #9C27B0;
+          --secondary: #BA68C8;
+          --dark: #7B1FA2;
+          --text: #FFFFFF;
+          --bg: #F3E5F5;
+          --card: #FFFFFF;
+          --hover: #EDE7F6;
+          --display-bg: #EDE7F6;
+          --display-text: #6A1B9A;
+          --btn-operator: #8E24AA;
+          --btn-number: #F5F5F5;
+          --btn-function: #F3E5F5;
+          --btn-equals: #9C27B0;
+          --history-bg: #F3E5F5;
+          --memory-indicator: #9C27B0;
         }
         
         .calculator-bg {

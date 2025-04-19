@@ -255,6 +255,7 @@ export function useCalculator() {
 
   return {
     state,
+    setState,
     setTheme,
     handleButtonClick,
     clearExpression,

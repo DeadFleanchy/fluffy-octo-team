@@ -45,6 +45,18 @@ export function ThemeSwitcher({ currentTheme, onThemeChange }: ThemeSwitcherProp
       >
         <span className={cn("text-white", currentTheme !== 'green' && "hidden")}>✓</span>
       </button>
+
+      <button 
+        onClick={() => onThemeChange('purple')}
+        className={cn(
+          "w-8 h-8 rounded-full border-2 border-white bg-purple-500 flex items-center justify-center",
+          "transition-transform hover:scale-110",
+          "focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+        )}
+        aria-label="Purple theme"
+      >
+        <span className={cn("text-white", currentTheme !== 'purple' && "hidden")}>✓</span>
+      </button>
     </div>
   );
 }
