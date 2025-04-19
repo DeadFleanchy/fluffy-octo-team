@@ -1,11 +1,13 @@
 import React, { useEffect, useCallback } from 'react';
-import { HistoryPanel } from './HistoryPanel';
 import { CalculatorDisplay } from './CalculatorDisplay';
 import { CalculatorKeypad } from './CalculatorKeypad';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { InputPanel } from './InputPanel';
 import { useCalculator } from '@/hooks/useCalculator';
 import { formatTime } from '@/lib/utils';
+import { Link } from 'wouter';
+import { Button } from '@/components/ui/button';
+import { History } from 'lucide-react';
 
 export function Calculator() {
   const {
@@ -237,19 +239,28 @@ export function Calculator() {
         }
       `}</style>
 
-      <div className="flex flex-col lg:flex-row gap-4 w-full max-w-6xl">
-        {/* History Panel */}
-        <HistoryPanel history={state.history} />
-
+      <div className="flex flex-col gap-4 w-full max-w-6xl">
         {/* Calculator Main */}
-        <div className="lg:w-3/4 rounded-lg shadow-xl overflow-hidden theme-transition calculator-card">
-          {/* Header with title and theme switcher */}
+        <div className="w-full rounded-lg shadow-xl overflow-hidden theme-transition calculator-card">
+          {/* Header with title, history button, and theme switcher */}
           <div className="flex justify-between items-center px-4 py-3 theme-transition calculator-primary">
             <h2 className="font-medium text-xl calculator-text">Scientific Calculator</h2>
-            <ThemeSwitcher 
-              currentTheme={state.theme} 
-              onThemeChange={setTheme} 
-            />
+            <div className="flex items-center gap-3">
+              <Link href="/history">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="bg-transparent border-white text-white hover:bg-white/10"
+                >
+                  <History className="mr-1 h-4 w-4" />
+                  History
+                </Button>
+              </Link>
+              <ThemeSwitcher 
+                currentTheme={state.theme} 
+                onThemeChange={setTheme} 
+              />
+            </div>
           </div>
 
           {/* Calculator Display */}
@@ -274,6 +285,12 @@ export function Calculator() {
             onMemorySubtract={memorySubtract}
           />
         </div>
+        
+        {/* Input Panel */}
+        <InputPanel 
+          angleMode={state.angleMode}
+          onAddToHistory={handleManualInput}
+        />
       </div>
     </div>
   );
