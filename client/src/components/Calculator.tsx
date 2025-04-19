@@ -3,10 +3,12 @@ import { CalculatorDisplay } from './CalculatorDisplay';
 import { CalculatorKeypad } from './CalculatorKeypad';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { InputPanel } from './InputPanel';
+import { DarkModeToggle } from './DarkModeToggle';
 import { useCalculator } from '@/hooks/useCalculator';
 import { formatTime } from '@/lib/utils';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import { History } from 'lucide-react';
 
 export function Calculator() {

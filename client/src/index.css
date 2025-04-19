@@ -10,4 +10,25 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+  
+  /* Define dark mode variables */
+  .dark {
+    --background: #121212;
+    --foreground: #e0e0e0;
+    --card: #1e1e1e;
+    --card-foreground: #e0e0e0;
+    --border: #333333;
+    --input: #2d2d2d;
+    --primary: #bb86fc;
+    --primary-foreground: #121212;
+    --secondary: #424242;
+    --secondary-foreground: #ffffff;
+    --accent: #03dac6;
+    --accent-foreground: #121212;
+    --destructive: #cf6679;
+    --destructive-foreground: #121212;
+    --ring: #bb86fc;
+    --muted: #262626;
+    --muted-foreground: #a0a0a0;
+  }
 }
