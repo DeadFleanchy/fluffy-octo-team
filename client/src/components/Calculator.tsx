@@ -105,7 +105,7 @@ export function Calculator() {
   ]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 calculator-bg">
+    <div className="min-h-screen flex items-center justify-center p-4 calculator-bg dark:bg-gray-900">
       <style>{`
         .calculator-theme-blue {
           --primary: #2196F3;
@@ -243,11 +243,13 @@ export function Calculator() {
 
       <div className="flex flex-col gap-4 w-full max-w-6xl">
         {/* Calculator Main */}
-        <div className="w-full rounded-lg shadow-xl overflow-hidden theme-transition calculator-card">
+        <div className="w-full rounded-lg shadow-xl overflow-hidden theme-transition calculator-card dark:shadow-gray-800">
           {/* Header with title, history button, and theme switcher */}
           <div className="flex justify-between items-center px-4 py-3 theme-transition calculator-primary">
             <h2 className="font-medium text-xl calculator-text">Scientific Calculator</h2>
             <div className="flex items-center gap-3">
+              <DarkModeToggle />
+              <Separator orientation="vertical" className="h-6 bg-white/30" />
               <Link href="/history">
                 <Button 
                   variant="outline" 
