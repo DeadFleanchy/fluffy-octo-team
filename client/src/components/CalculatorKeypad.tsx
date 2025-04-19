@@ -84,54 +84,61 @@ export function CalculatorKeypad({
   onMemorySubtract
 }: CalculatorKeypadProps) {
   return (
-    <div className="p-4 grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2">
-      {/* Memory Buttons Row */}
-      <KeypadButton value="MC" onClick={onMemoryClear} type="function" />
-      <KeypadButton value="MR" onClick={onMemoryRecall} type="function" />
-      <KeypadButton value="M+" onClick={onMemoryAdd} type="function" />
-      <KeypadButton value="M-" onClick={onMemorySubtract} type="function" />
-
-      {/* Scientific Functions Row 1 */}
-      <KeypadButton value="sin" onClick={onButtonClick} type="function" hideOnMobile />
-      <KeypadButton value="cos" onClick={onButtonClick} type="function" hideOnMobile />
-
-      {/* Scientific Functions Row 2 */}
-      <KeypadButton value="tan" onClick={onButtonClick} type="function" hideOnTablet />
-      <KeypadButton value="rad" onClick={onButtonClick} type="function" />
-      <KeypadButton value="log" onClick={onButtonClick} type="function" hideOnMobile />
-      <KeypadButton value="ln" onClick={onButtonClick} type="function" hideOnTablet />
-
-      {/* Scientific Functions Row 3 */}
-      <KeypadButton value="(" onClick={onButtonClick} type="function" />
-      <KeypadButton value=")" onClick={onButtonClick} type="function" />
-      <KeypadButton value="sqrt" display="√" onClick={onButtonClick} type="function" hideOnMobile />
-      <KeypadButton value="^" display="x^y" onClick={onButtonClick} type="function" hideOnTablet />
-
-      {/* Main Calculator Buttons */}
+    <div className="p-4 grid grid-cols-4 gap-2">
+      {/* Top Row - Clear Functions */}
       <KeypadButton value="C" onClick={onClear} type="function" />
       <KeypadButton value="CE" onClick={onClearEntry} type="function" />
       <KeypadButton value="⌫" onClick={onBackspace} type="function" />
       <KeypadButton value="/" display="÷" onClick={onButtonClick} type="operator" />
 
+      {/* Row 2 - Numbers 7-9 */}
       <KeypadButton value="7" onClick={onButtonClick} />
       <KeypadButton value="8" onClick={onButtonClick} />
       <KeypadButton value="9" onClick={onButtonClick} />
       <KeypadButton value="*" display="×" onClick={onButtonClick} type="operator" />
 
+      {/* Row 3 - Numbers 4-6 */}
       <KeypadButton value="4" onClick={onButtonClick} />
       <KeypadButton value="5" onClick={onButtonClick} />
       <KeypadButton value="6" onClick={onButtonClick} />
       <KeypadButton value="-" display="−" onClick={onButtonClick} type="operator" />
 
+      {/* Row 4 - Numbers 1-3 */}
       <KeypadButton value="1" onClick={onButtonClick} />
       <KeypadButton value="2" onClick={onButtonClick} />
       <KeypadButton value="3" onClick={onButtonClick} />
       <KeypadButton value="+" onClick={onButtonClick} type="operator" />
 
+      {/* Bottom Row */}
       <KeypadButton value="+/-" display="±" onClick={onButtonClick} />
       <KeypadButton value="0" onClick={onButtonClick} />
       <KeypadButton value="." onClick={onButtonClick} />
       <KeypadButton value="=" onClick={onEquals} type="equals" />
+      
+      {/* Memory Functions Row */}
+      <div className="col-span-4 mt-2 grid grid-cols-4 gap-2">
+        <KeypadButton value="MC" onClick={onMemoryClear} type="function" />
+        <KeypadButton value="MR" onClick={onMemoryRecall} type="function" />
+        <KeypadButton value="M+" onClick={onMemoryAdd} type="function" />
+        <KeypadButton value="M-" onClick={onMemorySubtract} type="function" />
+      </div>
+      
+      {/* Scientific Functions */}
+      <div className="col-span-4 mt-2 grid grid-cols-4 gap-2">
+        <KeypadButton value="sin" onClick={onButtonClick} type="function" />
+        <KeypadButton value="cos" onClick={onButtonClick} type="function" />
+        <KeypadButton value="tan" onClick={onButtonClick} type="function" />
+        <KeypadButton value="rad" onClick={onButtonClick} type="function" />
+        
+        <KeypadButton value="(" onClick={onButtonClick} type="function" />
+        <KeypadButton value=")" onClick={onButtonClick} type="function" />
+        <KeypadButton value="sqrt" display="√" onClick={onButtonClick} type="function" />
+        <KeypadButton value="^" display="x^y" onClick={onButtonClick} type="function" />
+        
+        <KeypadButton value="log" onClick={onButtonClick} type="function" />
+        <KeypadButton value="ln" onClick={onButtonClick} type="function" />
+        <div className="col-span-2"></div>
+      </div>
     </div>
   );
 }
