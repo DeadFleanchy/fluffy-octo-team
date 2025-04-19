@@ -1,6 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { KeypadButtonProps } from '@/types/calculator';
+import soundService from '@/lib/soundService';
 
 function KeypadButton({ 
   value, 
@@ -30,10 +31,29 @@ function KeypadButton({
     className
   );
 
+  const handleClick = () => {
+    // Call the onClick handler passed from parent
+    onClick(value);
+  };
+
+  const handleMouseDown = () => {
+    // Play the click sound when button is pressed
+    soundService.playClickSound();
+  };
+
+  const handleMouseUp = () => {
+    // Play the release sound when button is released
+    soundService.playReleaseSound();
+  };
+
   return (
     <button 
       className={buttonClass}
-      onClick={() => onClick(value)}
+      onClick={handleClick}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onTouchStart={handleMouseDown}
+      onTouchEnd={handleMouseUp}
     >
       {display || value}
     </button>

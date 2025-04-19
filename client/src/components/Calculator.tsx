@@ -230,6 +230,12 @@ export function Calculator() {
         
         .calculator-btn {
           transition: all 0.1s ease;
+          position: relative;
+        }
+        
+        .calculator-btn:hover {
+          z-index: 1;
+          box-shadow: 0 0 8px 2px var(--primary);
         }
         
         .calculator-btn:active {
