@@ -10,6 +10,7 @@ import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { History } from 'lucide-react';
+import soundService from '@/lib/soundService';
 
 export function Calculator() {
   const {
@@ -19,12 +20,21 @@ export function Calculator() {
     clearExpression,
     clearEntry,
     backspace,
-    calculateResult,
+    calculateResult: originalCalculateResult,
     memoryClear,
     memoryRecall,
     memoryAdd,
     memorySubtract
   } = useCalculator();
+  
+  // Wrap the calculateResult function to add the special sound effect
+  const calculateResult = useCallback(() => {
+    // Play the special bonus sound when = is pressed
+    soundService.playEqualsSound();
+    
+    // Call the original calculate result function
+    originalCalculateResult();
+  }, [originalCalculateResult]);
   
   // Function to handle input from the Input Panel
   const handleManualInput = useCallback((expression: string, result: string) => {

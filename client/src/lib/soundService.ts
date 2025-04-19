@@ -41,6 +41,54 @@ function createKeyboardClickSound(audioContext: AudioContext): AudioBuffer {
 }
 
 /**
+ * Creates a special bonus sound for the equals button
+ * This simulates a video game bonus/reward sound
+ */
+function createEqualsButtonSound(audioContext: AudioContext): AudioBuffer {
+  // Create an audio buffer (300ms)
+  const sampleRate = audioContext.sampleRate;
+  const duration = 0.3; // 300ms
+  const bufferSize = Math.floor(sampleRate * duration);
+  const buffer = audioContext.createBuffer(1, bufferSize, sampleRate);
+  const data = buffer.getChannelData(0);
+  
+  // Generate a cheerful bonus sound - multiple ascending tones
+  
+  // Create the main ascending tones
+  const frequencies = [440, 523.25, 659.25, 783.99]; // A4, C5, E5, G5 - major chord ascending
+  
+  for (let i = 0; i < bufferSize; i++) {
+    const t = i / sampleRate;
+    let sample = 0;
+    
+    // Create multiple tones with slight delays between them
+    for (let j = 0; j < frequencies.length; j++) {
+      const freq = frequencies[j];
+      const delay = j * 0.05; // 50ms delay between tones
+      
+      // Only add this frequency component if we're past its start time
+      if (t >= delay) {
+        // Calculate how far we are into this specific tone
+        const toneTime = t - delay;
+        // Decay the amplitude over time
+        const envelope = Math.exp(-toneTime * 8);
+        // Add a slight vibrato effect
+        const vibrato = 1 + 0.005 * Math.sin(2 * Math.PI * 8 * toneTime);
+        // Add this frequency component to the overall sample
+        sample += 0.2 * envelope * Math.sin(2 * Math.PI * freq * vibrato * toneTime);
+      }
+    }
+    
+    // Add a soft white noise component that fades out quickly for a sparkle effect
+    const noise = 0.05 * Math.random() * Math.exp(-t * 15);
+    
+    data[i] = Math.max(-0.8, Math.min(0.8, sample + noise));
+  }
+  
+  return buffer;
+}
+
+/**
  * Creates a mechanical keyboard release sound using Web Audio API
  */
 function createKeyboardReleaseSound(audioContext: AudioContext): AudioBuffer {
@@ -155,6 +203,32 @@ class SoundService {
       source.start();
     } catch (error) {
       console.error('Error playing release sound:', error);
+    }
+  }
+
+  /**
+   * Play a special bonus sound when the equals button is pressed
+   */
+  public playEqualsSound(): void {
+    if (!this.enabled || !this.audioContext) return;
+
+    try {
+      // Create the bonus sound buffer
+      const buffer = createEqualsButtonSound(this.audioContext);
+      
+      // Create source node
+      const source = this.audioContext.createBufferSource();
+      source.buffer = buffer;
+      
+      // Create gain node for volume control
+      const gainNode = this.audioContext.createGain();
+      gainNode.gain.value = 0.5; // Set volume to 50%
+      
+      source.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
+      source.start();
+    } catch (error) {
+      console.error('Error playing equals sound:', error);
     }
   }
 }
