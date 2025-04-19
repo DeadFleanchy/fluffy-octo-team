@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { calculate } from '@/lib/calculator';
 import { AngleMode } from '@/types/calculator';
+import soundService from '@/lib/soundService';
 
 interface InputPanelProps {
   angleMode: AngleMode;
@@ -20,6 +21,9 @@ export function InputPanel({ angleMode, onAddToHistory }: InputPanelProps) {
     if (!expression.trim()) return;
     
     try {
+      // Play the special equals sound when calculating
+      soundService.playEqualsSound();
+      
       const calculatedResult = calculate(expression, angleMode);
       setResult(calculatedResult);
       
