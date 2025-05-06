@@ -1,0 +1,51 @@
+import tkinter as tk
+from tkinter import messagebox
+import datetime
+
+class CalculatorApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Scientific Calculator")
+        self.expression = ""
+        self.result = ""
+
+        self.display = tk.Entry(root, font=("Arial", 18), bd=10, relief=tk.RIDGE, justify='right')
+        self.display.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
+
+        self.create_buttons()
+
+    def add_to_expression(self, value):
+        self.expression += str(value)
+        self.display.delete(0, tk.END)
+        self.display.insert(tk.END, self.expression)
+
+    def calculate_result(self):
+        try:
+            self.result = str(eval(self.expression))
+            self.display.delete(0, tk.END)
+            self.display.insert(tk.END, self.result)
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+            self.expression = ""
+
+    def clear(self):
+        self.expression = ""
+        self.display.delete(0, tk.END)
+
+    def create_buttons(self):
+        buttons = [
+            ('7', 1, 0), ('8', 1, 1), ('9', 1, 2), ('/', 1, 3),
+            ('4', 2, 0), ('5', 2, 1), ('6', 2, 2), ('*', 2, 3),
+            ('1', 3, 0), ('2', 3, 1), ('3', 3, 2), ('-', 3, 3),
+            ('0', 4, 0), ('.', 4, 1), ('=', 4, 2), ('+', 4, 3),
+        ]
+        for (text, row, col) in buttons:
+            action = self.calculate_result if text == '=' else lambda x=text: self.add_to_expression(x)
+            tk.Button(self.root, text=text, width=5, height=2, command=action).grid(row=row, column=col)
+
+        tk.Button(self.root, text='C', width=5, height=2, command=self.clear).grid(row=5, column=0, columnspan=4)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = CalculatorApp(root)
+    root.mainloop()
